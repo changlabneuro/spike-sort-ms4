@@ -1,0 +1,147 @@
+import util
+import numpy as np
+import scipy
+import os
+
+import spikeinterface.extractors as se
+import spikeinterface.sorters as ss
+import spikeinterface.toolkit as st
+
+def default_make_ms_params():
+    return ss.Mountainsort4Sorter.default_params()
+
+class MSSortingIO(object):
+    def __init__(self, root, src_filename, **kwargs):
+        self.root = root
+        self.src_filename = src_filename
+        self.sort_subdir = 'sorting_output'
+        self.features_subdir = 'extracted_features'
+        self.visualization_subdir = 'visualization_phy'
+
+    def sort_directory(self):
+        return os.path.join(self.root, self.sort_subdir, self.src_filename)
+    
+    def features_directory(self):
+        return os.path.join(self.root, self.features_subdir, self.src_filename)
+
+    def visualization_directory(self):
+        return os.path.join(self.root, self.visualization_directory, self.src_filename)
+
+class MSSortingParameters(object):
+    def __init__(self, **kwargs):
+        self.make_ms_params = kwargs.get('make_ms_params', default_make_ms_params)
+        self.sampling_frequency = kwargs.get('sampling_frequency', 40000)
+        self.detect_threshold = kwargs.get('detect_threshold', 3.5)
+        self.filter_on_sort = kwargs.get('filter_on_sort', False)
+        self.geometry = kwargs.get('geometry', None)
+
+    def ms_params(self):
+        ms_params = self.make_ms_params()
+        ms_params['detect_threshold'] = self.detect_threshold
+        ms_params['filter'] = self.filter_on_sort
+        return ms_params
+
+class MSPreprocessingParameters(object):
+    def __init__(self, **kwargs):
+        self.filter_type = kwargs.get('filter_type', 'butter')
+        self.filter_freq_min = kwargs.get('filter_freq_min', 300)
+        self.filter_freq_max = kwargs.get('filter_freq_max', 6000)
+
+class MSPostprocessingParameters(object):
+    def __init__(self, **kwargs):
+        self.waveform_ms_before = kwargs.get('waveform_ms_before', 1)
+        self.waveform_ms_after = kwargs.get('waveform_ms_after', 2)
+        self.unit_template_upsampling_factor = kwargs.get('unit_template_upsampling_factor', 10)
+
+def extract_recording(timeseries, sorting_params):
+    sampling_frequency = sorting_params.sampling_frequency
+    num_channels = timeseries.shape[0]
+    if sorting_params.geometry is None:
+        geom = np.zeros((num_channels, 2))
+        geom[:, 0] = range(num_channels)
+    else:
+        geom = sorting_params.geometry
+    return se.NumpyRecordingExtractor(timeseries=timeseries, geom=geom, sampling_frequency=sampling_frequency)
+
+def preprocess_recording(recording, preprocess_params):
+    return st.preprocessing.bandpass_filter(recording, filter_type=preprocess_params.filter_type, 
+                                                       freq_min=preprocess_params.filter_freq_min, 
+                                                       freq_max=preprocess_params.filter_freq_max)
+
+def sort_recording_ms4(recording_f, sorting_params, io):
+    output_dir = io.sort_directory()
+    util.require_directory(output_dir)
+    ms4_params = sorting_params.ms_params()
+    return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
+
+def make_mat_features(wf, wf_sem, templates, max_chan):
+    return {
+        'wf': wf,
+        'wf_sem': wf_sem,
+        'templates': templates,
+        'maxchn': max_chan
+    }
+
+def waveform_sem(all_wf):
+    wf_sem = []
+    for unit_num in range(len(all_wf)):
+        wf = all_wf[unit_num]
+        wf_sem.append(stats.sem(wf, axis=0))
+    return wf_sem
+
+def postprocess_recording(recording_f, sorting, params, io):
+    features_dir = io.features_directory()
+    util.require_directory(features_dir)
+
+    wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
+                                                                    ms_after=params.waveform_ms_after,
+                                                                    save_as_features=True, 
+                                                                    verbose=True)
+    all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
+                                                                        ms_after=params.waveform_ms_after, 
+                                                                        max_spikes_per_unit=None,
+                                                                        save_as_features=True, 
+                                                                        verbose=True)
+    wf_sem = waveform_sem(all_wf)
+
+    #######################################################
+    # Retreive the channel of highest prob. for each unit #
+    #######################################################
+    max_chan = st.postprocessing.get_unit_max_channels(recording_f, sorting, save_as_property=True, verbose=False)
+
+    ##########################################
+    # Get the average waveform for each unit #
+    ##########################################
+    templates = st.postprocessing.get_unit_templates(recording_f, sorting, 
+                                                     max_spikes_per_unit=None,
+                                                     recompute_info=True, 
+                                                     save_as_property=True, 
+                                                     verbose=False)
+
+
+    features_file = os.path.join(features_dir, 'extracted_features.mat')
+    mat_features = make_mat_features(wf, wf_sem, templates, max_chan)
+    scipy.io.savemat(features_file, mat_features, do_compression=True)
+
+    ###################################################
+    # Compute verification metrics like isi violation #
+    ###################################################
+    metrics = st.validation.compute_quality_metrics(sorting=sorting, 
+                                                    recording=recording_f,
+                                                    metric_names=['firing_rate', 'isi_violation', 'snr'],
+                                                    as_dataframe=True)
+    metrics.to_csv(os.path.join(features_dir, 'metrics.csv'))
+
+    #######################################################################
+    # Compute waveform features like half-max width and peak-trough ratio #
+    #######################################################################
+    features = st.postprocessing.compute_unit_template_features(recording_f, sorting, 
+                                                                max_spikes_per_unit=None, 
+                                                                as_dataframe=True, 
+                                                                upsampling_factor=params.unit_template_upsampling_factor)
+    features.to_csv(os.path.join(features_dir, 'features.csv'))
+
+def export_params_for_phy(recording_f, sorting, io):
+    vis_dir = io.visualization_directory()
+    util.require_directory(vis_dir)
+    st.postprocessing.export_to_phy(recording_f, sorting, output_folder=vis_dir, verbose=True)
