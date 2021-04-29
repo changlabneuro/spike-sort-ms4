@@ -10,8 +10,8 @@ PARALLEL = True
 if __name__ == '__main__':
     # _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
 
-    src_filenames = ['acc_1_04072016_kurosawacoppola_pre.mat', 
-                     'acc_1_04122016_kurosawacoppola_pre.mat', 
+    src_filenames = ['acc_1_04072016_kurosawacoppola_pre.mat',
+                     'acc_1_04122016_kurosawacoppola_pre.mat',
                      'acc_1_04192016_kurosawacoppola_pre.mat',
                      'acc_1_04202016_kurosawacoppola_pre.mat']
 
