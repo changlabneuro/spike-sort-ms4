@@ -25,7 +25,7 @@ class MSSortingIO(object):
         return os.path.join(self.root, self.features_subdir, self.src_filename)
 
     def visualization_directory(self):
-        return os.path.join(self.root, self.visualization_directory, self.src_filename)
+        return os.path.join(self.root, self.visualization_subdir, self.src_filename)
 
 class MSSortingParameters(object):
     def __init__(self, **kwargs):

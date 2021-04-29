@@ -1,12 +1,13 @@
 import os
 import scipy
 import h5py
+import numpy as np
 
 def require_directory(d):
     if not os.path.exists(d):
         os.makedirs(d, exist_ok=True)
 
-def load_mat(f):
+def load_mat(file_path):
     try:
         f = h5py.File(file_path, 'r')
     except:

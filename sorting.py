@@ -40,17 +40,13 @@ def waveform_sem(all_wf):
     wf_sem = []
     for unit_num in range(len(all_wf)):
         wf = all_wf[unit_num]
-        wf_sem.append(stats.sem(wf, axis=0))
+        wf_sem.append(scipy.stats.sem(wf, axis=0))
     return wf_sem
 
 def postprocess_recording(recording_f, sorting, params, io):
     features_dir = io.features_directory()
     util.require_directory(features_dir)
 
-    wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
-                                                                    ms_after=params.waveform_ms_after,
-                                                                    save_as_features=True, 
-                                                                    verbose=True)
     all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
                                                                         ms_after=params.waveform_ms_after, 
                                                                         max_spikes_per_unit=None,
@@ -74,7 +70,7 @@ def postprocess_recording(recording_f, sorting, params, io):
 
 
     features_file = os.path.join(features_dir, 'extracted_features.mat')
-    mat_features = make_mat_features(wf, wf_sem, templates, max_chan)
+    mat_features = make_mat_features([], wf_sem, templates, max_chan)
     scipy.io.savemat(features_file, mat_features, do_compression=True)
 
     ###################################################
