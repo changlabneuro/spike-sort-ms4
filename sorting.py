@@ -61,7 +61,11 @@ def extract_example_waveforms(all_wf, max_num_wfs):
     return example_wf
 
 def max_normalized_template(wf):
-    return np.mean(wf / np.max(np.abs(wf), axis=1), axis=0)
+    denom = np.max(np.abs(wf), axis=1)
+    res = wf.copy()
+    for i in range(res.shape[1]):
+        res[:, i] /= denom
+    return np.mean(res, axis=0)
 
 def max_normalized_templates(all_wf):
     templates = []
