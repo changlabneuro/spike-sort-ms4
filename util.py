@@ -35,7 +35,10 @@ def _find_files(files, exts, src, root, paths, names, subdirs):
                 break
 
 def find_files(p, exts, rec=False):
-    exts = list(exts)
+    if isinstance(exts, str):
+        exts = [exts]
+    else:
+        exts = list(exts)
     paths = []
     names = []
     subdirs = []
