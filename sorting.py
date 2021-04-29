@@ -107,11 +107,11 @@ def export_params_for_phy(recording_f, sorting, io):
     st.postprocessing.export_to_phy(recording_f, sorting, output_folder=vis_dir, verbose=True)
 
 def pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params):
-    recording = sorting.extract_recording(timeseries, sort_params)
-    recording_f = sorting.preprocess_recording(recording, preprocess_params)
-    sorter = sorting.sort_recording_ms4(recording_f, sort_params, io)
-    sorting.postprocess_recording(recording_f, sorter, postprocess_params, io)
-    sorting.export_params_for_phy(recording_f, sorter, io)
+    recording = extract_recording(timeseries, sort_params)
+    recording_f = preprocess_recording(recording, preprocess_params)
+    sorter = sort_recording_ms4(recording_f, sort_params, io)
+    postprocess_recording(recording_f, sorter, postprocess_params, io)
+    export_params_for_phy(recording_f, sorter, io)
 
 def matlab_source_file_default_pipeline(input_root, output_root, src_filename):
     input_file = os.path.join(input_root, src_filename)
