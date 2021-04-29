@@ -45,10 +45,10 @@ def waveform_sem(all_wf):
     return wf_sem
 
 def save_mat_file(mat_file, io):
-    features_dir = io.features_directory()
-    util.require_directory(features_dir)
-    features_file_path = os.path.join(features_dir, io.features_filename())
-    scipy.io.savemat(features_file_path, mat_file, do_compression=True)
+    mat_dir = io.matlab_directory()
+    util.require_directory(mat_dir)
+    mat_file_path = os.path.join(mat_dir, io.matlab_filename())
+    scipy.io.savemat(mat_file_path, mat_file, do_compression=True)
 
 def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, post_params, save=True):
     ##########################################

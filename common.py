@@ -14,8 +14,8 @@ class MSSortingIO(object):
     def __init__(self, root, src_filename, **kwargs):
         self.root = root
         self.src_filename = src_filename
-        self.sort_subdir = 'sorting_output'
-        self.features_subdir = 'extracted_features'
+        self.sort_subdir = 'ms4'
+        self.matlab_subdir = 'matlab'
         self.visualization_subdir = 'visualization_phy'
 
     def src_filename_sans_ext(self):
@@ -24,11 +24,11 @@ class MSSortingIO(object):
     def sort_directory(self):
         return os.path.join(self.root, self.sort_subdir, self.src_filename_sans_ext())
     
-    def features_directory(self):
-        return os.path.join(self.root, self.features_subdir, self.src_filename_sans_ext())
+    def matlab_directory(self):
+        return os.path.join(self.root, self.matlab_subdir, self.src_filename_sans_ext())
 
-    def features_filename(self, ext='.mat'):
-        return 'extracted_features{}'.format(ext)
+    def matlab_filename(self, ext='.mat'):
+        return 'sort{}'.format(ext)
 
     def visualization_directory(self):
         return os.path.join(self.root, self.visualization_subdir, self.src_filename_sans_ext())
