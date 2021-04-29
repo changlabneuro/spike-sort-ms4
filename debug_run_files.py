@@ -15,11 +15,10 @@ if __name__ == '__main__':
                      'acc_1_04192016_kurosawacoppola_pre.mat',
                      'acc_1_04202016_kurosawacoppola_pre.mat']
 
-    if PARALLEL:
-        fs = [lambda: sorting.matlab_source_file_default_pipeline(INPUT_ROOT, OUTPUT_ROOT, f) for f in src_filenames]
-        tasks = multiprocess.make_tasks(fs)
-        multiprocess.run_tasks(tasks)
+    fs = [lambda: sorting.matlab_source_file_default_pipeline(INPUT_ROOT, OUTPUT_ROOT, f) for f in src_filenames]
 
+    if PARALLEL:
+        multiprocess.run_tasks(multiprocess.make_tasks(fs))
     else:
-        for f in src_filenames:
-            sorting.matlab_source_file_default_pipeline(INPUT_ROOT, OUTPUT_ROOT, f)
+        for task in fs:
+            task()
