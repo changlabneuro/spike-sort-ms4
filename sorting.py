@@ -32,7 +32,7 @@ def make_mat_features(wf_sem, templates, max_chan, metrics):
     return {
         'wf_sem': wf_sem,
         'templates': templates,
-        'maxchn': max_chan
+        'maxchn': max_chan,
         'metrics': metrics
     }
 
