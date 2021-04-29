@@ -28,9 +28,8 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_features(wf, wf_sem, templates, max_chan):
+def make_mat_features(wf_sem, templates, max_chan):
     return {
-        'wf': wf,
         'wf_sem': wf_sem,
         'templates': templates,
         'maxchn': max_chan
@@ -47,6 +46,9 @@ def postprocess_recording(recording_f, sorting, params, io):
     features_dir = io.features_directory()
     util.require_directory(features_dir)
 
+    ##########################################
+    # Extract each waveform for each spike   #
+    ##########################################
     all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
                                                                         ms_after=params.waveform_ms_after, 
                                                                         max_spikes_per_unit=None,
@@ -54,23 +56,24 @@ def postprocess_recording(recording_f, sorting, params, io):
                                                                         verbose=True)
     wf_sem = waveform_sem(all_wf)
 
-    #######################################################
-    # Retreive the channel of highest prob. for each unit #
-    #######################################################
-    max_chan = st.postprocessing.get_unit_max_channels(recording_f, sorting, save_as_property=True, verbose=False)
-
     ##########################################
     # Get the average waveform for each unit #
     ##########################################
     templates = st.postprocessing.get_unit_templates(recording_f, sorting, 
                                                      max_spikes_per_unit=None,
-                                                     recompute_info=True, 
                                                      save_as_property=True, 
                                                      verbose=False)
+    templates = np.array(templates)
 
+    #######################################################
+    # Retreive the channel of highest prob. for each unit #
+    #######################################################
+    max_chan = st.postprocessing.get_unit_max_channels(recording_f, sorting, 
+                                                       save_as_property=True, 
+                                                       verbose=False)
 
     features_file = os.path.join(features_dir, 'extracted_features.mat')
-    mat_features = make_mat_features([], wf_sem, templates, max_chan)
+    mat_features = make_mat_features(wf_sem, templates, max_chan)
     scipy.io.savemat(features_file, mat_features, do_compression=True)
 
     ###################################################
@@ -78,7 +81,7 @@ def postprocess_recording(recording_f, sorting, params, io):
     ###################################################
     metrics = st.validation.compute_quality_metrics(sorting=sorting, 
                                                     recording=recording_f,
-                                                    metric_names=['firing_rate', 'isi_violation', 'snr'],
+                                                    metric_names=params.metric_names,
                                                     as_dataframe=True)
     metrics.to_csv(os.path.join(features_dir, 'metrics.csv'))
 

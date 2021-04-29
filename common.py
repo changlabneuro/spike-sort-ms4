@@ -51,4 +51,5 @@ class MSPostprocessingParameters(object):
     def __init__(self, **kwargs):
         self.waveform_ms_before = kwargs.get('waveform_ms_before', 1)
         self.waveform_ms_after = kwargs.get('waveform_ms_after', 2)
-        self.unit_template_upsampling_factor = kwargs.get('unit_template_upsampling_factor', 10)
+        self.unit_template_upsampling_factor = kwargs.get('unit_template_upsampling_factor', 1)
+        self.metric_names = kwargs.get('metric_names', ['firing_rate', 'isi_violation', 'snr'])
