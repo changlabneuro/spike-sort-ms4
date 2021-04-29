@@ -28,11 +28,12 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_features(wf_sem, templates, max_chan):
+def make_mat_features(wf_sem, templates, max_chan, metrics):
     return {
         'wf_sem': wf_sem,
         'templates': templates,
         'maxchn': max_chan
+        'metrics': metrics
     }
 
 def waveform_sem(all_wf):
@@ -72,18 +73,18 @@ def postprocess_recording(recording_f, sorting, params, io):
                                                        save_as_property=True, 
                                                        verbose=False)
 
-    features_file = os.path.join(features_dir, 'extracted_features.mat')
-    mat_features = make_mat_features(wf_sem, templates, max_chan)
-    scipy.io.savemat(features_file, mat_features, do_compression=True)
-
     ###################################################
     # Compute verification metrics like isi violation #
     ###################################################
     metrics = st.validation.compute_quality_metrics(sorting=sorting, 
                                                     recording=recording_f,
                                                     metric_names=params.metric_names,
-                                                    as_dataframe=True)
-    metrics.to_csv(os.path.join(features_dir, 'metrics.csv'))
+                                                    as_dataframe=False)
+    # metrics.to_csv(os.path.join(features_dir, 'metrics.csv'))
+
+    features_file = os.path.join(features_dir, 'extracted_features.mat')
+    mat_features = make_mat_features(wf_sem, templates, max_chan, metrics)
+    scipy.io.savemat(features_file, mat_features, do_compression=True)
 
     #######################################################################
     # Compute waveform features like half-max width and peak-trough ratio #
