@@ -1,4 +1,5 @@
 import sorting
+from common import MSSortingIO, MSSortingParameters, MSPreprocessingParameters, MSPostprocessingParameters
 import util
 import os
 
@@ -9,10 +10,10 @@ SRC_FILENAME = 'example.mda'
 def run(input_root, output_root, src_filename):
     input_file = os.path.join(input_root, src_filename)
 
-    io = sorting.MSSortingIO(output_root, src_filename)
-    sort_params = sorting.MSSortingParameters()
-    preprocess_params = sorting.MSPreprocessingParameters()
-    postprocess_params = sorting.MSPostprocessingParameters()
+    io = MSSortingIO(output_root, src_filename)
+    sort_params = MSSortingParameters()
+    preprocess_params = MSPreprocessingParameters()
+    postprocess_params = MSPostprocessingParameters()
 
     timeseries = util.mat_to_timeseries(util.load_mat(input_file))
     recording = sorting.extract_recording(timeseries, sort_params)
