@@ -41,12 +41,6 @@ def make_mat_file(src_filename, wf_sem, max_norm_templates, example_wf, template
         'postprocess_params': post_params.to_dict()
     }
 
-def reshape_waveforms(all_wf):
-    for i in range(len(all_wf)):
-        #   Convert Mx1xP array to MxP array
-        all_wf[i] = all_wf[i].reshape((all_wf[i].shape[0], all_wf[i].shape[2]))
-    return all_wf
-
 def waveform_sem(all_wf):
     wf_sem = []
     for unit_num in range(len(all_wf)):
@@ -58,15 +52,15 @@ def extract_example_waveforms(all_wf, max_num_wfs):
     example_wf = []
     for i in range(len(all_wf)):
         wf = all_wf[i]
-        examples = wf[0:min(wf.shape[0], int(max_num_wfs)), :]
+        examples = wf[0:min(wf.shape[0], int(max_num_wfs)), :, :]
         example_wf.append(examples)
     return example_wf
 
 def max_normalized_template(wf):
-    denom = np.max(np.abs(wf), axis=1)
+    denom = np.max(np.abs(wf), axis=2)
     res = wf.copy()
-    for i in range(res.shape[1]):
-        res[:, i] /= denom
+    for i in range(res.shape[2]):
+        res[:, :, i] /= denom
     return np.mean(res, axis=0)
 
 def max_normalized_templates(all_wf):
@@ -90,7 +84,6 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                         max_spikes_per_unit=None,
                                                                         save_as_features=True, 
                                                                         verbose=True)
-    all_wf = reshape_waveforms(all_wf)
     max_norm_templates = max_normalized_templates(all_wf)
     wf_sem = waveform_sem(all_wf)
     example_wf = extract_example_waveforms(all_wf, post_params.max_num_example_waveforms_per_unit)
