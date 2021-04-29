@@ -39,6 +39,12 @@ def make_mat_file(wf_sem, max_norm_templates, example_wf, templates, max_chan, m
         'postprocess_params': post_params.to_dict()
     }
 
+def reshape_waveforms(all_wf):
+    for i in range(len(all_wf)):
+        #   Convert Mx1xP array to MxP array
+        all_wf[i] = all_wf[i].reshape((all_wf[i].shape[0], all_wf[i].shape[2]))
+    return all_wf
+
 def waveform_sem(all_wf):
     wf_sem = []
     for unit_num in range(len(all_wf)):
@@ -78,6 +84,7 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                         max_spikes_per_unit=None,
                                                                         save_as_features=True, 
                                                                         verbose=True)
+    all_wf = reshape_waveforms(all_wf)
     max_norm_templates = max_normalized_templates(all_wf)
     wf_sem = waveform_sem(all_wf)
     example_wf = extract_example_waveforms(all_wf, post_params.max_num_example_waveforms_per_unit)
