@@ -81,11 +81,13 @@ class MSPostprocessingParameters(object):
         self.waveform_ms_after = kwargs.get('waveform_ms_after', 2)
         self.unit_template_upsampling_factor = kwargs.get('unit_template_upsampling_factor', 1)
         self.metric_names = kwargs.get('metric_names', ['firing_rate', 'isi_violation', 'snr'])
+        self.max_num_example_waveforms_per_unit = int(kwargs.get('max_num_example_waveforms_per_unit', 300))
 
     def to_dict(self):
         return {
             'waveform_ms_before': self.waveform_ms_before,
             'waveform_ms_after': self.waveform_ms_after,
             'unit_template_upsampling_factor': self.unit_template_upsampling_factor,
-            'metric_names': list(self.metric_names)
+            'metric_names': list(self.metric_names),
+            'max_num_example_waveforms_per_unit': self.max_num_example_waveforms_per_unit
         }
