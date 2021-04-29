@@ -11,11 +11,7 @@ import spikeinterface.toolkit as st
 def extract_recording(timeseries, sorting_params):
     sampling_frequency = sorting_params.sampling_frequency
     num_channels = timeseries.shape[0]
-    if sorting_params.geometry is None:
-        geom = np.zeros((num_channels, 2))
-        geom[:, 0] = range(num_channels)
-    else:
-        geom = sorting_params.geometry
+    geom = sorting_params.get_geometry(num_channels)
     return se.NumpyRecordingExtractor(timeseries=timeseries, geom=geom, sampling_frequency=sampling_frequency)
 
 def preprocess_recording(recording, preprocess_params):

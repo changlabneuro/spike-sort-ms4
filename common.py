@@ -47,6 +47,13 @@ class MSSortingParameters(object):
         ms_params['filter'] = self.filter_on_sort
         return ms_params
 
+    def get_geometry(self, num_channels):
+        geom = self.geometry
+        if geom is None:
+            geom = np.zeros((num_channels, 2))
+            geom[:, 0] = range(num_channels)
+        return geom
+
 class MSPreprocessingParameters(object):
     def __init__(self, **kwargs):
         self.filter_type = kwargs.get('filter_type', 'butter')
