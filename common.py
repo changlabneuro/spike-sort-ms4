@@ -22,16 +22,16 @@ class MSSortingIO(object):
         return os.path.splitext(self.src_filename)[0]
 
     def sort_directory(self):
-        return os.path.join(self.root, self.sort_subdir, self.src_filename_sans_ext())
+        return os.path.join(self.root, self.src_filename_sans_ext(), self.sort_subdir)
     
     def matlab_directory(self):
-        return os.path.join(self.root, self.matlab_subdir, self.src_filename_sans_ext())
+        return os.path.join(self.root, self.src_filename_sans_ext(), self.matlab_subdir)
 
     def matlab_filename(self, ext='.mat'):
         return 'sort{}'.format(ext)
 
     def visualization_directory(self):
-        return os.path.join(self.root, self.visualization_subdir, self.src_filename_sans_ext())
+        return os.path.join(self.root, self.src_filename_sans_ext(), self.visualization_subdir)
 
 class MSSortingParameters(object):
     def __init__(self, **kwargs):
