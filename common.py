@@ -89,5 +89,6 @@ class MSPostprocessingParameters(object):
             'waveform_ms_after': self.waveform_ms_after,
             'unit_template_upsampling_factor': self.unit_template_upsampling_factor,
             'metric_names': list(self.metric_names),
-            'max_num_example_waveforms_per_unit': self.max_num_example_waveforms_per_unit
+            #   Use truncated fieldname because savemat only supports fieldnames <= 31 characters
+            'max_num_example_wf_per_unit': self.max_num_example_waveforms_per_unit
         }
