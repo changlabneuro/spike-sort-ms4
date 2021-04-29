@@ -97,10 +97,28 @@ def postprocess_recording(recording_f, sorting, params, io, save=True):
 
     if save:
         save_mat_file(mat_file, io)
-        
+
     return mat_file
 
 def export_params_for_phy(recording_f, sorting, io):
     vis_dir = io.visualization_directory()
     util.require_directory(vis_dir)
     st.postprocessing.export_to_phy(recording_f, sorting, output_folder=vis_dir, verbose=True)
+
+def pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params):
+    recording = sorting.extract_recording(timeseries, sort_params)
+    recording_f = sorting.preprocess_recording(recording, preprocess_params)
+    sorter = sorting.sort_recording_ms4(recording_f, sort_params, io)
+    sorting.postprocess_recording(recording_f, sorter, postprocess_params, io)
+    sorting.export_params_for_phy(recording_f, sorter, io)
+
+def matlab_source_file_default_pipeline(input_root, output_root, src_filename):
+    input_file = os.path.join(input_root, src_filename)
+    timeseries = util.mat_to_timeseries(util.load_mat(input_file))
+
+    io = MSSortingIO(output_root, src_filename)
+    sort_params = MSSortingParameters()
+    preprocess_params = MSPreprocessingParameters()
+    postprocess_params = MSPostprocessingParameters()
+
+    pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params)
