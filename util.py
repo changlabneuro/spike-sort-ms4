@@ -23,3 +23,25 @@ def maybe_transpose(ts):
 def mat_to_timeseries(f):
     timeseries = np.array(f['mat'])
     return maybe_transpose(timeseries)
+
+def _find_files(files, exts, src, root, paths, names, subdirs):
+    for f in files:
+        for ext in exts:
+            if f.endswith(ext):
+                p = os.path.join(root, f)
+                paths.append(p)
+                names.append(f)
+                subdirs.append(os.path.dirname(p.split(src)[1]).lstrip(os.path.sep))
+                break
+
+def find_files(p, exts, rec=False):
+    exts = list(exts)
+    paths = []
+    names = []
+    subdirs = []
+    if rec:
+        for root, dirs, files in os.walk(p):
+            _find_files(files, exts, p, root, paths, names, subdirs)
+    else:
+        _find_files(os.listdir(p), exts, p, p, paths, names, subdirs)
+    return paths, names, subdirs
