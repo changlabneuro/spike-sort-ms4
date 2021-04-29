@@ -25,13 +25,16 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_file(wf_sem, templates, max_chan, metrics, features):
+def make_mat_file(wf_sem, templates, max_chan, metrics, features, pre_params, sort_params, post_params):
     return {
         'wf_sem': wf_sem,
         'templates': templates,
         'maxchn': max_chan,
         'metrics': metrics,
-        'features': features
+        'features': features,
+        'preprocess_params': pre_params.to_dict(),
+        'sort_params': sort_params.to_dict(),
+        'postprocess_params': post_params.to_dict()
     }
 
 def waveform_sem(all_wf):
@@ -47,12 +50,12 @@ def save_mat_file(mat_file, io):
     features_file_path = os.path.join(features_dir, io.features_filename())
     scipy.io.savemat(features_file_path, mat_file, do_compression=True)
 
-def postprocess_recording(recording_f, sorting, params, io, save=True):
+def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, post_params, save=True):
     ##########################################
     # Extract each waveform for each spike   #
     ##########################################
-    all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=params.waveform_ms_before, 
-                                                                        ms_after=params.waveform_ms_after, 
+    all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=post_params.waveform_ms_before, 
+                                                                        ms_after=post_params.waveform_ms_after, 
                                                                         max_spikes_per_unit=None,
                                                                         save_as_features=True, 
                                                                         verbose=True)
@@ -79,7 +82,7 @@ def postprocess_recording(recording_f, sorting, params, io, save=True):
     ###################################################
     metrics = st.validation.compute_quality_metrics(sorting=sorting, 
                                                     recording=recording_f,
-                                                    metric_names=params.metric_names,
+                                                    metric_names=post_params.metric_names,
                                                     as_dataframe=False)
 
     #######################################################################
@@ -88,9 +91,10 @@ def postprocess_recording(recording_f, sorting, params, io, save=True):
     features = st.postprocessing.compute_unit_template_features(recording_f, sorting, 
                                                                 max_spikes_per_unit=None, 
                                                                 as_dataframe=False, 
-                                                                upsampling_factor=params.unit_template_upsampling_factor)
+                                                                upsampling_factor=post_params.unit_template_upsampling_factor)
 
-    mat_file = make_mat_file(wf_sem, templates, max_chan, metrics, features)
+    mat_file = make_mat_file(wf_sem, templates, max_chan, metrics, features, \
+                             pre_params, sort_params, post_params)
 
     if save:
         save_mat_file(mat_file, io)
@@ -106,7 +110,7 @@ def pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params)
     recording = extract_recording(timeseries, sort_params)
     recording_f = preprocess_recording(recording, preprocess_params)
     sorter = sort_recording_ms4(recording_f, sort_params, io)
-    postprocess_recording(recording_f, sorter, postprocess_params, io)
+    postprocess_recording(recording_f, sorter, io, preprocess_params, sort_params, postprocess_params)
     export_params_for_phy(recording_f, sorter, io)
 
 def matlab_source_file_default_pipeline(input_root, output_root, src_filename):

@@ -54,11 +54,25 @@ class MSSortingParameters(object):
             geom[:, 0] = range(num_channels)
         return geom
 
+    def to_dict(self):
+        return {
+            'ms4_params': self.ms_params(),
+            'sampling_frequency': self.sampling_frequency,
+            'geometry': [] if self.geometry is None else self.geometry.copy()
+        }
+
 class MSPreprocessingParameters(object):
     def __init__(self, **kwargs):
         self.filter_type = kwargs.get('filter_type', 'butter')
         self.filter_freq_min = kwargs.get('filter_freq_min', 300)
         self.filter_freq_max = kwargs.get('filter_freq_max', 6000)
+
+    def to_dict(self):
+        return {
+            'filter_type': self.filter_type,
+            'filter_freq_min': self.filter_freq_min,
+            'filter_freq_max': self.filter_freq_max
+        }
 
 class MSPostprocessingParameters(object):
     def __init__(self, **kwargs):
@@ -66,3 +80,11 @@ class MSPostprocessingParameters(object):
         self.waveform_ms_after = kwargs.get('waveform_ms_after', 2)
         self.unit_template_upsampling_factor = kwargs.get('unit_template_upsampling_factor', 1)
         self.metric_names = kwargs.get('metric_names', ['firing_rate', 'isi_violation', 'snr'])
+
+    def to_dict(self):
+        return {
+            'waveform_ms_before': self.waveform_ms_before,
+            'waveform_ms_after': self.waveform_ms_after,
+            'unit_template_upsampling_factor': self.unit_template_upsampling_factor,
+            'metric_names': list(self.metric_names)
+        }
