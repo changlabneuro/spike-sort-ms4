@@ -25,8 +25,10 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_file(wf_sem, max_norm_templates, example_wf, templates, max_chan, metrics, features, pre_params, sort_params, post_params):
+def make_mat_file(src_filename, wf_sem, max_norm_templates, example_wf, templates, max_chan, \
+                  metrics, features, pre_params, sort_params, post_params):
     return {
+        'src_filename': src_filename,
         'wf_sem': wf_sem,
         'max_normalized_templates': max_norm_templates,
         'example_wf': example_wf,
@@ -125,7 +127,8 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                 as_dataframe=False, 
                                                                 upsampling_factor=post_params.unit_template_upsampling_factor)
 
-    mat_file = make_mat_file(wf_sem, max_norm_templates, example_wf, templates, max_chan, metrics, features, \
+    mat_file = make_mat_file(io.src_filename, wf_sem, max_norm_templates, example_wf, \
+                             templates, max_chan, metrics, features, \
                              pre_params, sort_params, post_params)
 
     if save:
