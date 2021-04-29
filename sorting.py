@@ -51,7 +51,7 @@ def extract_example_waveforms(all_wf, max_num_wfs):
         wf = all_wf[i]
         examples = wf[0:min(wf.shape[0], int(max_num_wfs)), :]
         example_wf.append(examples)
-    return np.array(example_wf, dtype=object)
+    return example_wf
 
 def save_mat_file(mat_file, io):
     mat_dir = io.matlab_directory()
