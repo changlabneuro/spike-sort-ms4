@@ -56,7 +56,8 @@ class MSSortingParameters(object):
 
     def to_dict(self):
         return {
-            'ms4_params': self.ms_params(),
+            'detect_threshold': self.detect_threshold,
+            'filter_on_sort', self.filter_on_sort,
             'sampling_frequency': self.sampling_frequency,
             'geometry': [] if self.geometry is None else self.geometry.copy()
         }
