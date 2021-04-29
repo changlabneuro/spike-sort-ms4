@@ -44,10 +44,13 @@ def waveform_sem(all_wf):
         wf_sem.append(scipy.stats.sem(wf, axis=0))
     return wf_sem
 
-def postprocess_recording(recording_f, sorting, params, io):
+def save_mat_file(mat_file, io):
     features_dir = io.features_directory()
     util.require_directory(features_dir)
+    features_file_path = os.path.join(features_dir, io.features_filename())
+    scipy.io.savemat(features_file_path, mat_file, do_compression=True)
 
+def postprocess_recording(recording_f, sorting, params, io, save=True):
     ##########################################
     # Extract each waveform for each spike   #
     ##########################################
@@ -91,8 +94,11 @@ def postprocess_recording(recording_f, sorting, params, io):
                                                                 upsampling_factor=params.unit_template_upsampling_factor)
 
     mat_file = make_mat_file(wf_sem, templates, max_chan, metrics, features)
-    features_file_path = os.path.join(features_dir, 'extracted_features.mat')
-    scipy.io.savemat(features_file_path, mat_file, do_compression=True)
+
+    if save:
+        save_mat_file(mat_file, io)
+        
+    return mat_file
 
 def export_params_for_phy(recording_f, sorting, io):
     vis_dir = io.visualization_directory()

@@ -27,6 +27,9 @@ class MSSortingIO(object):
     def features_directory(self):
         return os.path.join(self.root, self.features_subdir, self.src_filename_sans_ext())
 
+    def features_filename(self, ext='.mat'):
+        return 'extracted_features{}'.format(ext)
+
     def visualization_directory(self):
         return os.path.join(self.root, self.visualization_subdir, self.src_filename_sans_ext())
 
