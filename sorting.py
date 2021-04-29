@@ -25,9 +25,10 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_file(wf_sem, example_wf, templates, max_chan, metrics, features, pre_params, sort_params, post_params):
+def make_mat_file(wf_sem, max_norm_templates, example_wf, templates, max_chan, metrics, features, pre_params, sort_params, post_params):
     return {
         'wf_sem': wf_sem,
+        'max_normalized_templates': max_norm_templates,
         'example_wf': example_wf,
         'templates': templates,
         'maxchn': max_chan,
@@ -53,6 +54,15 @@ def extract_example_waveforms(all_wf, max_num_wfs):
         example_wf.append(examples)
     return example_wf
 
+def max_normalized_template(wf):
+    return np.mean(wf / np.max(np.abs(wf), axis=1), axis=0)
+
+def max_normalized_templates(all_wf):
+    templates = []
+    for i in range(len(all_wf)):
+        templates.append(max_normalized_template(all_wf[i]))
+    return templates
+
 def save_mat_file(mat_file, io):
     mat_dir = io.matlab_directory()
     util.require_directory(mat_dir)
@@ -68,6 +78,7 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                         max_spikes_per_unit=None,
                                                                         save_as_features=True, 
                                                                         verbose=True)
+    max_norm_templates = max_normalized_templates(all_wf)
     wf_sem = waveform_sem(all_wf)
     example_wf = extract_example_waveforms(all_wf, post_params.max_num_example_waveforms_per_unit)
 
@@ -103,7 +114,7 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                 as_dataframe=False, 
                                                                 upsampling_factor=post_params.unit_template_upsampling_factor)
 
-    mat_file = make_mat_file(wf_sem, example_wf, templates, max_chan, metrics, features, \
+    mat_file = make_mat_file(wf_sem, max_norm_templates, example_wf, templates, max_chan, metrics, features, \
                              pre_params, sort_params, post_params)
 
     if save:
