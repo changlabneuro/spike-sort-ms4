@@ -28,12 +28,13 @@ def sort_recording_ms4(recording_f, sorting_params, io):
     ms4_params = sorting_params.ms_params()
     return ss.run_mountainsort4(recording_f, **ms4_params, output_folder=output_dir)
 
-def make_mat_features(wf_sem, templates, max_chan, metrics):
+def make_mat_file(wf_sem, templates, max_chan, metrics, features):
     return {
         'wf_sem': wf_sem,
         'templates': templates,
         'maxchn': max_chan,
-        'metrics': metrics
+        'metrics': metrics,
+        'features': features
     }
 
 def waveform_sem(all_wf):
@@ -80,20 +81,18 @@ def postprocess_recording(recording_f, sorting, params, io):
                                                     recording=recording_f,
                                                     metric_names=params.metric_names,
                                                     as_dataframe=False)
-    # metrics.to_csv(os.path.join(features_dir, 'metrics.csv'))
-
-    features_file = os.path.join(features_dir, 'extracted_features.mat')
-    mat_features = make_mat_features(wf_sem, templates, max_chan, metrics)
-    scipy.io.savemat(features_file, mat_features, do_compression=True)
 
     #######################################################################
     # Compute waveform features like half-max width and peak-trough ratio #
     #######################################################################
     features = st.postprocessing.compute_unit_template_features(recording_f, sorting, 
                                                                 max_spikes_per_unit=None, 
-                                                                as_dataframe=True, 
+                                                                as_dataframe=False, 
                                                                 upsampling_factor=params.unit_template_upsampling_factor)
-    features.to_csv(os.path.join(features_dir, 'features.csv'))
+
+    mat_file = make_mat_file(wf_sem, templates, max_chan, metrics, features)
+    features_file_path = os.path.join(features_dir, 'extracted_features.mat')
+    scipy.io.savemat(features_file_path, mat_file, do_compression=True)
 
 def export_params_for_phy(recording_f, sorting, io):
     vis_dir = io.visualization_directory()
