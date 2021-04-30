@@ -1,6 +1,7 @@
 import sorting
 import util
 import multiprocess
+import numpy as np
 import os
 
 INPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files'
