@@ -6,6 +6,7 @@ import os
 
 INPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files'
 OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting'
+PARALLEL = True
 NUM_PARALLEL_PROCESSES = 28
 
 def sort_several(files):
