@@ -1,25 +1,54 @@
 import sorting
+import common
 import util
 import multiprocess
 import numpy as np
 import os
+import itertools
 
 INPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/raw_data'
 OUTPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/test_output'
 PARALLEL = True
 NUM_PARALLEL_PROCESSES = 8
 
-def sort_several(files):
-    for file in files:
-        sorting.matlab_source_file_default_pipeline(INPUT_ROOT, OUTPUT_ROOT, file)
+def make_parameters(freq_min, filter_type, noise_overlap_thresh, detect_thresh):
+    preprocess_params = common.MSPreprocessingParameters(filter_freq_min=freq_min, filter_type=filter_type)
+    sort_params = common.MSSortingParameters(detect_threshold=detect_thresh, 
+                                             noise_overlap_threshold=noise_overlap_thresh)
+    return preprocess_params, sort_params
 
-def create_sorting_task(files):
-    return (lambda f: lambda: sort_several(f))(files)
+def parameter_subdir(freq_min, filter_type, noise_overlap_thresh, detect_thresh):
+    return '{}-{}-{}-{}'.format(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
+
+def sort_several(combinations):
+    for c in combinations:
+        file, freq_min, filter_type, noise_overlap_thresh, detect_thresh = c
+        sort_params, preprocess_params = make_parameters(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
+        output_subdir = parameter_subdir(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
+        sorting.matlab_source_file_default_pipeline(INPUT_ROOT, os.path.join(OUTPUT_ROOT, output_subdir), file,
+                                                    sort_params=sort_params, 
+                                                    preprocess_params=preprocess_params)
+
+def create_sorting_task(combination):
+    return (lambda c: lambda: sort_several(c))(combination)
+
+def get_src_filenames():
+    _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
+    return src_filenames
+
+def get_sorting_combinations(src_filenames):
+    freq_mins = [300, 400, 500, 600]
+    filter_types = ['fft', 'butter']
+    noise_overlap_threshs = [0.15, 0.5]
+    detect_threshs = [4, 5]
+    return list(itertools.product(src_filenames, freq_mins, filter_types, noise_overlap_threshs, detect_threshs))
 
 if __name__ == '__main__':
-    _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
-    filename_sets = np.array_split(src_filenames, NUM_PARALLEL_PROCESSES)
-    fs = [create_sorting_task(f) for f in filename_sets]
+    src_filenames = get_src_filenames()
+    sorting_combs = get_sorting_combinations(src_filenames)
+
+    sorting_sets = np.array_split(sorting_combs, NUM_PARALLEL_PROCESSES)
+    fs = [create_sorting_task(s) for s in sorting_sets]
 
     if PARALLEL:
         multiprocess.run_tasks(multiprocess.make_tasks(fs))
