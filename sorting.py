@@ -3,6 +3,7 @@ from common import MSSortingIO, MSSortingParameters, MSPreprocessingParameters, 
 import numpy as np
 import scipy
 import os
+import random
 
 import spikeinterface.extractors as se
 import spikeinterface.sorters as ss
@@ -52,7 +53,8 @@ def extract_example_waveforms(all_wf, max_num_wfs):
     example_wf = []
     for i in range(len(all_wf)):
         wf = all_wf[i]
-        examples = wf[0:min(wf.shape[0], int(max_num_wfs)), :, :]
+        random_max_num_wfs = random.sample(range(wf.shape[0]), min(wf.shape[0], int(max_num_wfs)))
+        examples = wf[random_max_num_wfs, :, :]
         example_wf.append(examples)
     return example_wf
 
@@ -79,8 +81,8 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
     ##########################################
     # Extract each waveform for each spike   #
     ##########################################
-    all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, ms_before=post_params.waveform_ms_before, 
-                                                                        ms_after=post_params.waveform_ms_after, 
+    all_wf = st.postprocessing.get_unit_waveforms(recording_f, sorting, #ms_before=post_params.waveform_ms_before, 
+                                                                        #ms_after=post_params.waveform_ms_after, 
                                                                         max_spikes_per_unit=None,
                                                                         save_as_features=True, 
                                                                         verbose=True)
