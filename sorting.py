@@ -142,8 +142,8 @@ def pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params)
     export_params_for_phy(recording_f, sorter, io)
 
 def matlab_source_file_default_pipeline(input_root, output_root, src_filename, 
-                                        sort_params=MSSortingParameters(),
                                         preprocess_params=MSPreprocessingParameters(),
+                                        sort_params=MSSortingParameters(),
                                         postprocess_params=MSPostprocessingParameters()):
     input_file = os.path.join(input_root, src_filename)
     timeseries = util.mat_to_timeseries(util.load_mat(input_file))
