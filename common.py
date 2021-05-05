@@ -38,6 +38,7 @@ class MSSortingParameters(object):
         self.make_ms_params = kwargs.get('make_ms_params', default_make_ms_params)
         self.sampling_frequency = kwargs.get('sampling_frequency', 40000)
         self.detect_threshold = kwargs.get('detect_threshold', 3.5)
+        self.noise_overlap_threshold = kwargs.get('noise_overlap_threshold', 0.15)
         self.filter_on_sort = kwargs.get('filter_on_sort', False)
         self.geometry = kwargs.get('geometry', None)
 
@@ -45,6 +46,7 @@ class MSSortingParameters(object):
         ms_params = self.make_ms_params()
         ms_params['detect_threshold'] = self.detect_threshold
         ms_params['filter'] = self.filter_on_sort
+        ms_params['noise_overlap_threshold'] = self.noise_overlap_threshold
         return ms_params
 
     def get_geometry(self, num_channels):
@@ -57,6 +59,7 @@ class MSSortingParameters(object):
     def to_dict(self):
         return {
             'detect_threshold': self.detect_threshold,
+            'noise_overlap_threshold': self.noise_overlap_threshold,
             'filter_on_sort': self.filter_on_sort,
             'sampling_frequency': self.sampling_frequency,
             'geometry': [] if self.geometry is None else self.geometry.copy()

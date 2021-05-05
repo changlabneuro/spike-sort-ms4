@@ -13,7 +13,8 @@ NUM_PARALLEL_PROCESSES = 8
 
 def make_parameters(freq_min, filter_type, noise_overlap_thresh, detect_thresh):
     preprocess_params = common.MSPreprocessingParameters(filter_freq_min=freq_min, filter_type=filter_type)
-    sort_params = common.MSSortingParameters(detect_threshold=detect_thresh)
+    sort_params = common.MSSortingParameters(detect_threshold=detect_thresh, 
+                                             noise_overlap_threshold=noise_overlap_thresh)
     return preprocess_params, sort_params
 
 def parameter_subdir(freq_min, filter_type, noise_overlap_thresh, detect_thresh):
