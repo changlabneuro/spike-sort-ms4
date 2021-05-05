@@ -6,8 +6,10 @@ import numpy as np
 import os
 import itertools
 
-INPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/raw_data'
-OUTPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/test_output'
+# INPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/raw_data'
+# OUTPUT_ROOT = '/media/chang/T41/data/mountainsort-plexon-pipeline/test_output'
+INPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files'
+OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_param_comp'
 PARALLEL = True
 NUM_PARALLEL_PROCESSES = 8
 
@@ -33,7 +35,8 @@ def create_sorting_task(combination):
     return (lambda c: lambda: sort_several(c))(combination)
 
 def get_src_filenames():
-    _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
+    src_filenames = ['acc_1_04052016', 'acc_1_04072016', 'acc_1_Hitch_01052017', 'acc_1_Hitch_01172017']
+    # _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
     return src_filenames
 
 def get_sorting_combinations(src_filenames):
