@@ -25,7 +25,7 @@ def parameter_subdir(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
 def sort_several(combinations):
     for c in combinations:
         file, freq_min, filter_type, noise_overlap_thresh, detect_thresh = c
-        sort_params, preprocess_params = make_parameters(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
+        preprocess_params, sort_params = make_parameters(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
         output_subdir = parameter_subdir(freq_min, filter_type, noise_overlap_thresh, detect_thresh)
         sorting.matlab_source_file_default_pipeline(INPUT_ROOT, os.path.join(OUTPUT_ROOT, output_subdir), file,
                                                     sort_params=sort_params, 
