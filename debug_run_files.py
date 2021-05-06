@@ -50,7 +50,7 @@ if __name__ == '__main__':
     src_filenames = get_src_filenames()
     sorting_combs = get_sorting_combinations(src_filenames)
 
-    sorting_sets = np.array_split(sorting_combs, NUM_PARALLEL_PROCESSES)
+    sorting_sets = np.array_split(np.array(sorting_combs, dtype=object), NUM_PARALLEL_PROCESSES)
     fs = [create_sorting_task(s) for s in sorting_sets]
 
     if PARALLEL:
