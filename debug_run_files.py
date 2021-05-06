@@ -35,7 +35,7 @@ def create_sorting_task(combination):
     return (lambda c: lambda: sort_several(c))(combination)
 
 def get_src_filenames():
-    src_filenames = ['acc_1_04052016.mat', 'acc_1_04072016.mat', 'acc_1_Hitch_01052017.mat', 'acc_1_Hitch_01172017.mat']
+    src_filenames = ['acc_05122016_KurosawaCoppola.mat', 'acc_1_04052016_kurocoppola_pre.mat', 'acc_1_Hitch_01052017.mat', 'acc_1_Hitch_01172017.mat']
     # _, src_filenames, _ = util.find_files(INPUT_ROOT, '.mat')
     return src_filenames
 
