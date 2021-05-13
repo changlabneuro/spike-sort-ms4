@@ -37,8 +37,8 @@ class MSSortingParameters(object):
     def __init__(self, **kwargs):
         self.make_ms_params = kwargs.get('make_ms_params', default_make_ms_params)
         self.sampling_frequency = kwargs.get('sampling_frequency', 40000)
-        self.detect_threshold = kwargs.get('detect_threshold', 4)
-        self.noise_overlap_threshold = kwargs.get('noise_overlap_threshold', 0.15)
+        self.detect_threshold = kwargs.get('detect_threshold', 5)
+        self.noise_overlap_threshold = kwargs.get('noise_overlap_threshold', 0.5)
         self.filter_on_sort = kwargs.get('filter_on_sort', False)
         self.geometry = kwargs.get('geometry', None)
 

@@ -5,9 +5,9 @@ import numpy as np
 import os
 
 INPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files'
-OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting'
+OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting_stringent'
 PARALLEL = True
-NUM_PARALLEL_PROCESSES = 28
+NUM_PARALLEL_PROCESSES = 8
 
 def sort_several(files):
     for file in files:
