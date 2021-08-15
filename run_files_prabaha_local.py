@@ -3,8 +3,8 @@ import util
 import multiprocess
 import os
 
-INPUT_ROOT = '/Users/prabaha/Box/NeuralData/ms4_timescale_test'
-OUTPUT_ROOT = '/Users/prabaha/Box/NeuralData/ms4_timescale_test'
+INPUT_ROOT = '/Volumes/ExtSSD/Sorting_Test'
+OUTPUT_ROOT = '/Volumes/ExtSSD/Sorting_Test/sorted'
 PARALLEL = False
 
 def create_sorting_task(file):
@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     # Here you can provide a list of specific files to be sorted instead
     
-    src_filenames = ['acc_1_04052016', 'acc_1_04072016', 'acc_1_Hitch_01052017', 'acc_1_Hitch_01172017']
+    # src_filenames = ['acc_1_04052016', 'acc_1_04072016', 'acc_1_Hitch_01052017', 'acc_1_Hitch_01172017']
 
     # src_filenames = ['acc_kuro_05292017.mat']
 

@@ -4,21 +4,43 @@ import numpy as np
 import scipy
 import os
 import random
+from scipy.signal import butter, lfilter
 
 import spikeinterface.extractors as se
 import spikeinterface.sorters as ss
 import spikeinterface.toolkit as st
 
-def extract_recording(timeseries, sorting_params):
+def butter_bandpass(lowcut, highcut, fs, order=3):
+    nyq = 0.5 * fs
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype='band')
+    return b, a
+
+def butter_bandpass_filter(data, lowcut, highcut, fs, order=3):
+    b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+    y = lfilter(b, a, data)
+    return y
+
+def extract_preprocessed_recording(timeseries, sorting_params, preprocess_params):
     sampling_frequency = sorting_params.sampling_frequency
     num_channels = timeseries.shape[0]
+    timeseries_f = preprocess_timeseries(timeseries, preprocess_params, sampling_frequency)
     geom = sorting_params.get_geometry(num_channels)
-    return se.NumpyRecordingExtractor(timeseries=timeseries, geom=geom, sampling_frequency=sampling_frequency)
+    return se.NumpyRecordingExtractor(timeseries=timeseries_f, geom=geom, sampling_frequency=sampling_frequency)
 
-def preprocess_recording(recording, preprocess_params):
-    return st.preprocessing.bandpass_filter(recording, filter_type=preprocess_params.filter_type, 
-                                                       freq_min=preprocess_params.filter_freq_min, 
-                                                       freq_max=preprocess_params.filter_freq_max)
+def preprocess_timeseries(timeseries, preprocess_params, sampling_frequency):
+    num_channels = timeseries.shape[0]
+    num_samples = timeseries.shape[1]
+    timeseries_f = np.zeros((num_channels, num_samples))
+    for channel in range(num_channels):
+        timeseries_channel_f = butter_bandpass_filter(np.reshape( timeseries[channel,], (num_samples,) ),
+                                                     preprocess_params.filter_freq_min,
+                                                     preprocess_params.filter_freq_max,
+                                                     sampling_frequency,
+                                                     order=3)
+        timeseries_f[channel,] = timeseries_channel_f
+    return timeseries_f
 
 def sort_recording_ms4(recording_f, sorting_params, io):
     output_dir = io.sort_directory()
@@ -137,8 +159,7 @@ def export_params_for_phy(recording_f, sorting, io):
     st.postprocessing.export_to_phy(recording_f, sorting, output_folder=vis_dir, verbose=True)
 
 def pipeline(timeseries, io, preprocess_params, sort_params, postprocess_params):
-    recording = extract_recording(timeseries, sort_params)
-    recording_f = preprocess_recording(recording, preprocess_params)
+    recording_f = extract_preprocessed_recording(timeseries, sort_params, preprocess_params)
     sorter = sort_recording_ms4(recording_f, sort_params, io)
     postprocess_recording(recording_f, sorter, io, preprocess_params, sort_params, postprocess_params)
     export_params_for_phy(recording_f, sorter, io)

@@ -22,6 +22,7 @@ def maybe_transpose(ts):
 
 def mat_to_timeseries(f):
     timeseries = np.array(f['mat'])
+    timeseries = timeseries.astype(float)
     return maybe_transpose(timeseries)
 
 def _find_files(files, exts, src, root, paths, names, subdirs):
