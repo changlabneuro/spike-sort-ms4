@@ -16,7 +16,7 @@ def load_mat(file_path):
 
 def maybe_transpose(ts):
     if ts.shape[0] > ts.shape[1]:
-        return np.reshape(ts, (ts.shape[1],))
+        return ts.T
     else:
         return ts
 

@@ -37,8 +37,9 @@ class MSSortingParameters(object):
     def __init__(self, **kwargs):
         self.make_ms_params = kwargs.get('make_ms_params', default_make_ms_params)
         self.sampling_frequency = kwargs.get('sampling_frequency', 40000.)
-        self.detect_threshold = kwargs.get('detect_threshold', 5)
-        self.noise_overlap_threshold = kwargs.get('noise_overlap_threshold', 0.5)
+        self.detect_threshold = kwargs.get('detect_threshold', 4)
+        self.noise_overlap_threshold = kwargs.get('noise_overlap_threshold', 0.1)
+        self.adjacency_radius =kwargs.get('adjacency_radius', 100)
         self.filter_on_sort = kwargs.get('filter_on_sort', False)
         self.geometry = kwargs.get('geometry', None)
 
@@ -47,6 +48,7 @@ class MSSortingParameters(object):
         ms_params['detect_threshold'] = self.detect_threshold
         ms_params['filter'] = self.filter_on_sort
         ms_params['noise_overlap_threshold'] = self.noise_overlap_threshold
+        ms_params['adjacency_radius'] = self.adjacency_radius
         return ms_params
 
     def get_geometry(self, num_channels):
@@ -62,6 +64,7 @@ class MSSortingParameters(object):
             'noise_overlap_threshold': self.noise_overlap_threshold,
             'filter_on_sort': self.filter_on_sort,
             'sampling_frequency': self.sampling_frequency,
+            'adjacency_radius': self.adjacency_radius
             'geometry': [] if self.geometry is None else self.geometry.copy()
         }
 
@@ -69,7 +72,7 @@ class MSPreprocessingParameters(object):
     def __init__(self, **kwargs):
         self.filter_type = kwargs.get('filter_type', 'butter')
         self.filter_freq_min = kwargs.get('filter_freq_min', 300.)
-        self.filter_freq_max = kwargs.get('filter_freq_max', 8000.)
+        self.filter_freq_max = kwargs.get('filter_freq_max', 6000.)
 
     def to_dict(self):
         return {
