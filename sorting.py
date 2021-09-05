@@ -138,6 +138,7 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                     recording=recording_f,
                                                     metric_names=post_params.metric_names,
                                                     as_dataframe=False)
+    metrics = dict(metrics)
 
     #######################################################################
     # Compute waveform features like half-max width and peak-trough ratio #
@@ -146,6 +147,7 @@ def postprocess_recording(recording_f, sorting, io, pre_params, sort_params, pos
                                                                 max_spikes_per_unit=None, 
                                                                 as_dataframe=False, 
                                                                 upsampling_factor=post_params.unit_template_upsampling_factor)
+    features = dict(features)
 
     mat_file = make_mat_file(io.src_filename, wf_sem, max_norm_templates, example_wf, \
                              templates, max_chan, metrics, features, \
