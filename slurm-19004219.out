@@ -1,0 +1,21 @@
+acc_05122016_KurosawaCoppola.mat
+Sampling freq:  40000.0
+preprocess_params.filter_freq_min:  300.0
+preprocess_params.filter_freq_max:  6000.0
+Num channels:  1
+Num samples:  117199734
+'end_frame' set to 117199734
+Extracting waveforms in chunks:   0%|          | 0/2 [00:00<?, ?it/s]Extracting waveforms in chunks:  50%|#####     | 1/2 [00:00<00:00,  2.68it/s]Extracting waveforms in chunks: 100%|##########| 2/2 [00:00<00:00,  2.93it/s]Extracting waveforms in chunks: 100%|##########| 2/2 [00:00<00:00,  2.89it/s]
+/gpfs/milgram/project/chang/pg496/conda_envs/ms4_sorting_env/lib/python3.9/site-packages/numpy/core/numeric.py:2453: DeprecationWarning: elementwise comparison failed; this will raise an error in the future.
+  return bool(asarray(a1 == a2).all())
+Number of chunks: 2 - Number of jobs: 1
+Warning: recording is not filtered! It's recommended to filter the recording before exporting to phy.
+You can run spiketoolkit.preprocessing.bandpass_filter(recording)
+Converting to Phy format
+Fitting PCA of 3 dimensions on 20000 waveforms
+Projecting waveforms on PC
+Saving files
+Saved phy format to:  /gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting_300_6000/acc_05122016_KurosawaCoppola/visualization_phy
+Run:
+
+phy template-gui  /gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting_300_6000/acc_05122016_KurosawaCoppola/visualization_phy/params.py
