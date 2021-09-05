@@ -64,7 +64,7 @@ class MSSortingParameters(object):
             'noise_overlap_threshold': self.noise_overlap_threshold,
             'filter_on_sort': self.filter_on_sort,
             'sampling_frequency': self.sampling_frequency,
-            'adjacency_radius': self.adjacency_radius
+            'adjacency_radius': self.adjacency_radius,
             'geometry': [] if self.geometry is None else self.geometry.copy()
         }
 

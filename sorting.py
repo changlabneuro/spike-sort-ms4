@@ -25,13 +25,25 @@ def butter_bandpass_filter(data, lowcut, highcut, fs, order=3):
 
 def extract_preprocessed_recording(timeseries, sorting_params, preprocess_params):
     sampling_frequency = sorting_params.sampling_frequency
-    freq_min = preprocess_params.filter_freq_min
-    freq_max = preprocess_params.filter_freq_max
-    order = 3
     num_channels = timeseries.shape[0]
+    timeseries_f = preprocess_timeseries(timeseries, preprocess_params, sampling_frequency)
     geom = sorting_params.get_geometry(num_channels)
-    timeseries_f = butter_bandpass_filter(timeseries, freq_min, freq_max, sampling_frequency, order)
     return se.NumpyRecordingExtractor(timeseries=timeseries_f, geom=geom, sampling_frequency=sampling_frequency)
+    
+def preprocess_timeseries(timeseries, preprocess_params, sampling_frequency):
+    num_channels = timeseries.shape[0]
+    num_samples = timeseries.shape[1]
+    print('Sampling freq: ', sampling_frequency)
+    print('preprocess_params.filter_freq_min: ', preprocess_params.filter_freq_min)
+    print('preprocess_params.filter_freq_max: ', preprocess_params.filter_freq_max)
+    print('Num channels: ', num_channels)
+    print('Num samples: ', num_samples)
+    timeseries_f = butter_bandpass_filter(timeseries,
+                                        preprocess_params.filter_freq_min,
+                                        preprocess_params.filter_freq_max,
+                                        sampling_frequency,
+                                        order=3)
+    return timeseries_f
 
 def sort_recording_ms4(recording_f, sorting_params, io):
     output_dir = io.sort_directory()
