@@ -3,7 +3,7 @@ import util
 import sys
 
 INPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files'
-OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting_300_6000'
+OUTPUT_ROOT = '/gpfs/milgram/project/chang/pg496/nn_all_raw_files_ms4_sorting_400_9000'
 
 def create_sorting_task(file):
     return (lambda f: lambda: sorting.matlab_source_file_default_pipeline(INPUT_ROOT, OUTPUT_ROOT, f))(file)
